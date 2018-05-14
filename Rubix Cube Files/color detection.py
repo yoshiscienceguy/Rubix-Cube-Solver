@@ -113,7 +113,7 @@ def getColor(image):
             #print(b,g,r,cn)
             blockNumber += 1
     cv2.imshow("squares"+str(i),debug)
-    cv2.waitKey(0)
+    #cv2.waitKey(0)
     print("Processed Face. Result: " + str(Face))
     return Face
 
@@ -150,22 +150,26 @@ for i in range(6):
     #cv2.waitKey(0)
     
 cubeString = ""
+order = []
 for face in Cube:
+    blockNum = 1
     for block in face:
         cubeString += str(block)
-print cubeString
-
-cubeString = cubeString.replace("5","U")
-cubeString = cubeString.replace("1","R")
-cubeString = cubeString.replace("6","F")
-cubeString = cubeString.replace("4","D")
-cubeString = cubeString.replace("3","L")
-cubeString = cubeString.replace("2","B")
+        if(blockNum == 5):
+           order.append(str(block))
+        blockNum += 1
+print(cubeString)
+#URFDLB
+cubeString = cubeString.replace(order[0],"U")
+cubeString = cubeString.replace(order[1],"R")
+cubeString = cubeString.replace(order[2],"F")
+cubeString = cubeString.replace(order[3],"D")
+cubeString = cubeString.replace(order[4],"L")
+cubeString = cubeString.replace(order[5],"B")
 import kociemba
 print(cubeString)
 
 answer = kociemba.solve(cubeString)
-
 print(answer)
 end = time.time()
 print("End time: "+ str(end))
