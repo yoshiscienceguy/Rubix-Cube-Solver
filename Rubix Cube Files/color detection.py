@@ -39,7 +39,7 @@ def processImage(picNum):
 
     #image = cv2.bilateralFilter(image,9,75,75)
     #image = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,35)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     images[picNum - 1] = image
     #cv2.imshow("squares",image)
@@ -59,14 +59,14 @@ def getColor(image):
             x,y = length,width
             #cv2.circle(debug,(y,x),5,(0,255,0),2)
             #b, g, r = image[x,y,0] , image[x,y,1], image[x,y,2]
-            shiftx,shifty = 30,30
+            shiftx,shifty = 20,20
 
             b,g,r = map(int,([image[x-shiftx:x+shiftx,y-shifty:y+shifty, p].mean() for p in range(image.shape[-1])]))
             cv2.rectangle(debug,(y-shifty,x-shiftx), (y+shiftx,x+shiftx),(0,255,0),2)
             print(b,g,r , "BGR")
             match = False
             colormatches = 0
-            smooth = 25
+            smooth = 40
             while colormatches != 1:
                 
                 for existingColor in colors:
