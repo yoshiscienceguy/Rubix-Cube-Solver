@@ -1,78 +1,81 @@
 
-#include <Servo.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver servos = Adafruit_PWMServoDriver();
+int ServoA2 = 5;
+int ServoB2 = 7;
+int ServoC2 = 9;
+int ServoD2 = 11;
 
-Servo ServoA1;
-Servo ServoA2;
-Servo ServoB1;
-Servo ServoB2;
-Servo ServoC1;
-Servo ServoC2;
-Servo ServoD1;
-Servo ServoD2;
+int ServoA1 = 4;
+int ServoB1 = 6;
+int ServoC1 = 8;
+int ServoD1 = 10;
+
+
 //2s are Claws
 //1s are pinions
-int sliderStart = 150;
-int sliderEnd = 40;
-int gripperStart = 92;
-int StartClawA = 80;
-int StartClawB = 85;
-int StartClawC = 85;
-int StartClawD = 90;
 
-int LeftClawA = 10;
-int LeftClawB = 180;
-int LeftClawC = 0;
-int LeftClawD = 175;
+int StartClawA = 310;
+int StartClawB = 340;
+int StartClawC = 340;
+int StartClawD = 345;
+  
+int LeftClawA = 125;
+int LeftClawB = 540;
+int LeftClawC = 125;
+int LeftClawD = 550;
 
-int RightClawA = 165;
-int RightClawB = 0;
-int RightClawC = 180;
-int RightClawD = 0;
+int RightClawA = 515;
+int RightClawB = 120;
+int RightClawC = 525;
+int RightClawD = 135;
+
+
+int MIN = 150;
+int half = 320;
+int MAX = 500;
 void setup() {
+  servos.begin();
+  
+  servos.setPWMFreq(60);
   // initialize the digital pin as an output.
-  ServoA1.attach(4);
-  ServoA2.attach(5);
-  ServoB1.attach(6);
-  ServoB2.attach(7);
-  ServoC1.attach(8);
-  ServoC2.attach(9);
-  ServoD1.attach(10);
-  ServoD2.attach(11);
+  servos.setPWM(4,0,StartClawA);
+  servos.setPWM(5,0,MAX);
   
-  ServoA1.write(StartClawA);
-  ServoA2.write(sliderStart);
+  servos.setPWM(6,0,StartClawB);
+  servos.setPWM(7,0,MAX);
   
-  ServoB1.write(StartClawB);
-  ServoB2.write(sliderStart);
+  servos.setPWM(8,0,StartClawC);
+  servos.setPWM(9,0,MAX);
   
-  ServoC1.write(StartClawC);
-  ServoC2.write(sliderStart);
-  
-  ServoD1.write(StartClawD);
-  ServoD2.write(sliderStart);
+  servos.setPWM(10,0,StartClawD);
+  servos.setPWM(11,0,MAX);
 
   Serial.begin(9600);
 }
 
-void SlideIn(Servo motor) {
-  motor.write(70);
+void SlideIn(int motor) {
+  servos.setPWM(motor,0,275);
 }
-void SlideOut(Servo motor) {
-  motor.write(160);
+void SlideOut(int motor) {
+  servos.setPWM(motor,0,500);
 }
-void Tighten(Servo motor){
-  motor.write(50);  
+void Tighten(int motor){
+  servos.setPWM(motor,0,250); 
 }
+
 void RESET() {
   SlideOut(ServoA2);
   SlideOut(ServoB2);
   SlideOut(ServoC2);
   SlideOut(ServoD2);
 
-  ServoA1.write(85);
-  ServoB1.write(100);
-  ServoC1.write(80);
-  ServoD1.write(90);
+  servos.setPWM(ServoA1,0,StartClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,StartClawC); 
+  servos.setPWM(ServoD1,0,StartClawD); 
+
 }
 
 void Close(){
@@ -82,110 +85,83 @@ void Close(){
    Tighten(ServoD2);  
    delay(500);
 }
-void PeekV(){
-   SlideOut(ServoB2);
-   SlideOut(ServoD2);
-   Tighten(ServoA2);
-   Tighten(ServoC2);
-   delay(1000);
-   Tighten(ServoA2);
-   Tighten(ServoC2);
-   Tighten(ServoB2);
-   Tighten(ServoD2);
-   delay(1000);
-}
-
-void PeekH(){
-   SlideOut(ServoA2);
-   SlideOut(ServoC2);
-   Tighten(ServoB2);
-   Tighten(ServoD2);
-   delay(1000);
-   Tighten(ServoB2);
-   Tighten(ServoD2);
-   Tighten(ServoA2);
-   Tighten(ServoC2);
-   delay(1000);  
-}
 void RotateV(){
-  ServoA1.write(StartClawA);
-  ServoC1.write(StartClawC);
-  ServoB1.write(StartClawB);
-  ServoD1.write(StartClawD);
+  servos.setPWM(ServoA1,0,StartClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,StartClawC); 
+  servos.setPWM(ServoD1,0,StartClawD); 
   Tighten(ServoA2);
   Tighten(ServoC2);
   SlideOut(ServoB2);
   SlideOut(ServoD2);
   delay(500);
-  ServoA1.write(RightClawA);
-  ServoC1.write(LeftClawC);
-  ServoB1.write(StartClawB);
-  ServoD1.write(StartClawD);
-  delay(500);
+  
+  servos.setPWM(ServoA1,0,RightClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,LeftClawC); 
+  servos.setPWM(ServoD1,0,StartClawD); 
+  Serial.println("done");
+  delay(2500);
+  servos.setPWM(ServoA1,0,LeftClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,RightClawC); 
+  servos.setPWM(ServoD1,0,StartClawD); 
+
+  Serial.println("done");
+  delay(1500);
+  
+  servos.setPWM(ServoA1,0,StartClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,StartClawC); 
+  servos.setPWM(ServoD1,0,StartClawD); 
+  delay(700);
   Tighten(ServoB2);
   Tighten(ServoD2);
-  delay(700);
-  SlideOut(ServoA2);
-  SlideOut(ServoC2);
-  delay(700);
-  ServoA1.write(StartClawA);
-  ServoC1.write(StartClawC);
-  ServoB1.write(StartClawB);
-  ServoD1.write(StartClawD);
-  delay(700);
-  Tighten(ServoB2);
-  Tighten(ServoD2);
-  Tighten(ServoA2);
-  Tighten(ServoC2);
   delay(700);
 }
 void RotateH(){
-  ServoA1.write(StartClawA);
-  ServoC1.write(StartClawC);
-  ServoB1.write(StartClawB);
-  ServoD1.write(StartClawD);
+  servos.setPWM(ServoA1,0,StartClawA); 
+  servos.setPWM(ServoB1,0,StartClawB); 
+  servos.setPWM(ServoC1,0,StartClawC); 
+  servos.setPWM(ServoD1,0,StartClawD);
+  delay(500); 
   Tighten(ServoB2);
   Tighten(ServoD2);
+  delay(500);
   SlideOut(ServoA2);
   SlideOut(ServoC2);
   delay(500);
-  ServoA1.write(StartClawA);
-  ServoC1.write(StartClawC);
-  ServoB1.write(RightClawB);
-  ServoD1.write(LeftClawD);
-  delay(500);
+  servos.setPWM(ServoA1,0,StartClawA); 
+  servos.setPWM(ServoB1,0,RightClawB); 
+  servos.setPWM(ServoC1,0,StartClawC); 
+  servos.setPWM(ServoD1,0,LeftClawD); 
+  Serial.println("done");
+  delay(1500);
   Tighten(ServoA2);
   Tighten(ServoC2);
-  delay(700);
+  delay(400);
   SlideOut(ServoB2);
   SlideOut(ServoD2);
-  delay(700);
-  ServoA1.write(StartClawA);
-  ServoC1.write(StartClawC);
-  ServoB1.write(StartClawB);
-  ServoD1.write(StartClawD);
-  delay(700);
-  Tighten(ServoB2);
-  Tighten(ServoD2);
-  Tighten(ServoA2);
-  Tighten(ServoC2);
-  delay(700);
+  
+  delay(500);
 }
 void ScanRotate() {
   for(int i = 0; i < 4; i++){
-    Close();
-    RotateV();
-    PeekH();
-    PeekV();
-
-  }
-  for(int i = 0; i < 4; i++){
-    Close();
+    //Close();
+    
     RotateH();
-    PeekV();
-    PeekH();
+    //PeekH();
+    //PeekV();
 
   }
+
+    //Close();
+    RotateV();
+    //PeekV();
+    
+    //PeekH();
+
+
 
 }
 int n = 1;
@@ -193,7 +169,8 @@ int n = 1;
 void loop() {
   if (Serial.available() > 0) {
     n = Serial.parseInt();
-    delay(1000);
+    Close();
+    delay(300);
     ScanRotate();
     Close();
     
