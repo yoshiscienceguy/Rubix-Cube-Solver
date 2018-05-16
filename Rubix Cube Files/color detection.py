@@ -2,8 +2,12 @@ import numpy
 import cv2
 import time
 import threading
+import arduinoConnect
+import urllib
+
 start = time.time()
 print("Start Time: "+str(start))
+
 class ColorBounds():
     def __init__(self,u,point,block,cn):
         self.detectedColor = u
@@ -25,6 +29,10 @@ class ColorBounds():
         if(color[0] in Rrange and color[1] in Brange and color[2] in Grange):
             self.points.append(point)
             self.blockNumbers.append(block)
+##            r = (self.detectedColor[0] + color[0]) / 2
+##            g = (self.detectedColor[1] + color[1]) / 2
+##            b = (self.detectedColor[2] + color[2]) / 2
+##            self.detectedColor = [r,g,b]
             #print("winner")
             return True
         return False
@@ -34,13 +42,17 @@ def processImage(picNum):
     
     impath = "./cubePics/Cube"+str(picNum)+".jpg"
     image = cv2.imread(impath)
+    #imResp = urllib.urlopen("http://192.168.0.4:8080/shot.jpg")
+    #imNp = numpy.array(bytearray(imResp.read()),dtype=np.uint8)
+    #image = cv2.imdecode(imgNp,-1)
+
     image = image[10:430,30:450]
     image = cv2.resize(image,(300,300))
 
     #image = cv2.bilateralFilter(image,9,75,75)
     #image = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,35)
     #image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
     images[picNum - 1] = image
     #cv2.imshow("squares",image)
     #cv2.waitKey(0)
@@ -64,6 +76,8 @@ def getColor(image):
             b,g,r = map(int,([image[x-shiftx:x+shiftx,y-shifty:y+shifty, p].mean() for p in range(image.shape[-1])]))
             cv2.rectangle(debug,(y-shifty,x-shiftx), (y+shiftx,x+shiftx),(0,255,0),2)
             print(b,g,r , "BGR")
+            cv2.imshow("squares"+str(i),debug)
+            cv2.waitKey(0)
             match = False
             colormatches = 0
             smooth = 40
@@ -113,9 +127,11 @@ def getColor(image):
             #print(b,g,r,cn)
             blockNumber += 1
     cv2.imshow("squares"+str(i),debug)
-    #cv2.waitKey(0)
+    cv2.waitKey(0)
     print("Processed Face. Result: " + str(Face))
     return Face
+
+arduinoConnect.startScan()
 
 font                   = cv2.FONT_HERSHEY_SIMPLEX
 bottomLeftCornerOfText = (10,500)
