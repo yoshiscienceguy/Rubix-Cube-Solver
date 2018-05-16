@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 from cv2 import *
 import kociemba
+import arduinoConnect
+import time
 
 pixelBounds = [(80,50), (160,50), (240,50),
                (80,115), (160,115), (240,115),
@@ -21,7 +23,7 @@ CUBE = [None]*6
 def makeCube():
     global CUBE
     for i in range(1,7):
-        impath = "cubePics/Cube"+str(i)+".jpg"
+        impath = "./cubePics/Cube"+str(i)+".jpg"
         im = cv2.imread(impath)
         #im = cv2.bilateralFilter(im,9,75,75)
         #im = cv2.fastNlMeansDenoisingColored(im,None,10,10,7,21)
@@ -36,9 +38,9 @@ def makeCube():
             frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)     # Thresholding image
             imgray = frame_threshed
             ret,thresh = cv2.threshold(frame_threshed,127,255,0)
-            contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            contours = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-            for cnt in contours:
+            for cnt in contours[1]:
                 x,y,w,h = cv2.boundingRect(cnt)
                 
                 if(w > 55 and h > 55):
@@ -51,9 +53,9 @@ def makeCube():
                             #print(index)
                             Face[index] = color
                    # print(x,y),(x+w,y+h)
-            #cv2.imshow("Show",im)
-            #cv2.imwrite("extracted.jpg", im)
-            #cv2.waitKey()
+            cv2.imshow("Show",im)
+            
+            cv2.waitKey()
         #print(Face)
         CUBE[i - 1] = Face
     cv2.destroyAllWindows()
@@ -79,6 +81,9 @@ def Solve():
     
     return(cubeString)
 
+
+#arduinoConnect.startScan()
+#time.sleep(.5)
 makeCube()
 cs = Solve()
 answer = kociemba.solve(cs)
