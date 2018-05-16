@@ -2,8 +2,7 @@ import numpy
 import cv2
 import time
 import threading
-import arduinoConnect
-import urllib
+#import arduinoConnect
 
 start = time.time()
 print("Start Time: "+str(start))
@@ -131,7 +130,7 @@ def getColor(image):
     print("Processed Face. Result: " + str(Face))
     return Face
 
-arduinoConnect.startScan()
+#arduinoConnect.startScan()
 
 font                   = cv2.FONT_HERSHEY_SIMPLEX
 bottomLeftCornerOfText = (10,500)
