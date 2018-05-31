@@ -3,7 +3,6 @@ import cv2
 from cv2 import *
 import kociemba
 import arduinoConnect
-import time
 
 pixelBounds = [(80,50), (160,50), (240,50),
                (80,115), (160,115), (240,115),
@@ -13,22 +12,25 @@ pixelBounds = [(80,50), (160,50), (240,50),
 bounds = [
         ( [15 , 0 , 50] , [35 , 255, 255] , "yellow"),
         ( [100 , 100 , 100] , [150, 255, 255] , "blue"  ),
-        ( [60  , 0 , 180] , [140, 100, 255] , "white" ),
-        ( [0 , 100 , 50] , [10 , 255, 255] , "orange"),
-        ( [70 , 100 , 50] , [100 , 255, 255] , "green" ),
-        ( [120, 100 , 50] , [180, 255, 255] , "red"   )
+        ( [100  , 0 , 180] , [150, 180, 255] , "white" ),
+        ( [6 , 100 , 50] , [15 , 255, 255] , "orange"),
+        ( [35 , 100 , 50] , [80 , 255, 255] , "green" ),
+        ( [120, 100 , 50] , [180, 255, 255] , "red"   ),
+        ( [0, 100 , 50] , [5, 255, 255] , "red"   ),
         ]
-CUBE = [None]*6
+CUBE = []
 
 def makeCube():
     global CUBE
+    
     for i in range(1,7):
         impath = "./cubePics/Cube"+str(i)+".jpg"
         im = cv2.imread(impath)
+
         #im = cv2.bilateralFilter(im,9,75,75)
         #im = cv2.fastNlMeansDenoisingColored(im,None,10,10,7,21)
         hsv_img = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)   # HSV image
-        Face = [None]*9
+        Face = []
      
         for b in bounds:
             lower,upper,color = b
@@ -38,26 +40,58 @@ def makeCube():
             frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)     # Thresholding image
             imgray = frame_threshed
             ret,thresh = cv2.threshold(frame_threshed,127,255,0)
-            contours = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            _,contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-            for cnt in contours[1]:
+            for cnt in contours:
                 x,y,w,h = cv2.boundingRect(cnt)
                 
-                if(w > 55 and h > 55):
+                if(w > 50 and h > 50):
                     cv2.rectangle(im,(x,y),(x+w,y+h),(0,255,0),2)
-                    for c1,c2 in pixelBounds:
-                        midX = range(x,x+w+1)
-                        midY = range(y,y+h+1)
-                        if(c1 in midX and c2 in midY):
-                            index = pixelBounds.index((c1,c2))
-                            #print(index)
-                            Face[index] = color
-                   # print(x,y),(x+w,y+h)
+                    point = [(x,y),(x+w,y+h),color]
+                    midx,midy = x + w/2, y + h/2
+                    if(len(Face) > 0):
+                        found = False
+                        for p1,p2,_ in Face:
+                            x1,y1 = p1
+                            x2,y2 = p2
+                            if(midx >= x1 and midx <= x2):
+                                if( midy >= y1 and midy <= y2):
+                                    found = True
+                                    break
+                        if(not found):
+                            Face.append(point)
+                    else:
+                        Face.append(point)
             cv2.imshow("Show",im)
-            
+    
             cv2.waitKey()
+        #print(len(Face))
         #print(Face)
-        CUBE[i - 1] = Face
+        colorface = []
+        facePoints = []
+        for point1,point2,color in Face:
+            facePoints.append([point1[0],point1[1],color])
+            
+        orderedY = sorted(facePoints, key = lambda k: [k[1],k[0]])
+        
+        top = orderedY[:3]
+        orderedX = sorted(top, key = lambda k: [k[0],k[1]])
+        for Xcoor, yCoor, color in orderedX:
+            colorface.append(color)
+
+        middle = orderedY[3:6]
+        orderedX = sorted(middle, key = lambda k: [k[0],k[1]])
+        for Xcoor, yCoor, color in orderedX:
+            colorface.append(color)
+
+        low = orderedY[6:9]
+        orderedX = sorted(low, key = lambda k: [k[0],k[1]])
+        for Xcoor, yCoor, color in orderedX:
+            colorface.append(color)
+        print(colorface)
+        CUBE.append(colorface)
+        #cv2.imshow("Show",im)   
+        cv2.waitKey()
     cv2.destroyAllWindows()
 
 def Solve():
@@ -82,9 +116,10 @@ def Solve():
     return(cubeString)
 
 
-#arduinoConnect.startScan()
-#time.sleep(.5)
+arduinoConnect.startScan()
+
 makeCube()
 cs = Solve()
 answer = kociemba.solve(cs)
 print(answer)
+arduinoConnect.sendString(answer)

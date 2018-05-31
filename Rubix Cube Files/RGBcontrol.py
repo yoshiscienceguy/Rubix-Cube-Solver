@@ -14,16 +14,16 @@ sl='Saturation Low'
 vh='Value High'
 vl='Value Low'
 
-cv2.createTrackbar(hl, 'image',0,179,nothing)
-cv2.createTrackbar(hh, 'image',0,179,nothing)
-cv2.createTrackbar(sl, 'image',0,255,nothing)
-cv2.createTrackbar(sh, 'image',0,255,nothing)
-cv2.createTrackbar(vl, 'image',0,255,nothing)
-cv2.createTrackbar(vh, 'image',0,255,nothing)
+cv2.createTrackbar(hl, 'image',120,179,nothing)
+cv2.createTrackbar(hh, 'image',180,179,nothing)
+cv2.createTrackbar(sl, 'image',100,255,nothing)
+cv2.createTrackbar(sh, 'image',255,255,nothing)
+cv2.createTrackbar(vl, 'image',50,255,nothing)
+cv2.createTrackbar(vh, 'image',255,255,nothing)
 
 while(1):
     #_,frame=cap.read()
-    impath = "cubePics/Cube"+str(2)+".jpg"
+    impath = "cubePics/Cube"+str(1)+".jpg"
     frame = cv2.imread(impath)
     #frame=cv2.GaussianBlur(frame,(5,5),0)
     #convert to HSV from BGR

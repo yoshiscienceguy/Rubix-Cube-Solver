@@ -9,7 +9,7 @@ def ProcessPic(cap):
     # Capture frame-by-frame
     #ret, frame = cap.read()
 
-    crop = cap[180:435,200:500]
+    crop = cap[185:485,230:530]
     # Display the resulting frame
     return crop
 
@@ -46,3 +46,5 @@ def testCamera():
         if(cv2.waitKey(1) == 27):
            break
     cv2.destroyAllWindows()
+
+
