@@ -16,33 +16,33 @@ int ServoD1 = 10;
 //2s are Claws
 //1s are pinions
 
-int StartClawA = 320;
-int StartClawB = 340;
-int StartClawC = 310;
-int StartClawD = 350;
+int StartClawA = 280;
+int StartClawB = 280;
+int StartClawC = 300;
+int StartClawD = 260;
 
-int LeftClawA = 140;
-int LeftClawB = 538;
-int LeftClawC = 125;
-int LeftClawD = 550;
+int LeftClawA = 120;
+int LeftClawB = 490;
+int LeftClawC = 115;
+int LeftClawD = 490;
 
-int RightClawA = 500;
-int RightClawB = 130;
-int RightClawC = 525;
-int RightClawD = 135;
+int RightClawA = 460;
+int RightClawB = 100;
+int RightClawC = 500;
+int RightClawD = 95;
 
 
-int MinA = 290;
-int MinB = 300;
-int MinC = 220;
-int MinD = 280;
+int MinA = 210;
+int MinB = 130;
+int MinC = 190;
+int MinD = 220;
 
 int half = 320;
 
-int MAXA= 500;
-int MAXB= 550;
-int MAXC= 440;
-int MAXD= 600;
+int MAXA= 450;
+int MAXB= 350;
+int MAXC= 430;
+int MAXD= 410;
 void setup() {
   servos.begin();
 
@@ -61,14 +61,28 @@ void setup() {
   servos.setPWM(10,0,StartClawD);
   servos.setPWM(11,0,MAXD);
   
+  
   Serial.begin(9600);
+  
 }
 
 void SlideIn(int motor) {
   servos.setPWM(motor,0,275);
 }
 void SlideOut(int motor) {
-  servos.setPWM(motor,0,500);
+  if(motor == 5){
+    servos.setPWM(motor,0,MAXA);
+  }
+  if(motor == 7){
+    servos.setPWM(motor,0,MAXB);
+  }
+  if(motor == 9){
+    servos.setPWM(motor,0,MAXC);
+  }
+  if(motor == 11){
+    servos.setPWM(motor,0,MAXD);
+  }
+  
 }
 void Tighten(int motor,int Min){
   servos.setPWM(motor,0,Min); 
